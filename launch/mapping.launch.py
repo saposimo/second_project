@@ -1,6 +1,8 @@
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
@@ -9,8 +11,14 @@ def generate_launch_description():
 
     slam_params  = os.path.join(pkg_dir, 'config', 'slam_toolbox_params.yaml')
     rviz_config  = os.path.join(pkg_dir, 'config', 'mapping_rviz.rviz')
+    use_sim_time = LaunchConfiguration('use_sim_time')
 
     return LaunchDescription([
+        DeclareLaunchArgument(
+            'use_sim_time',
+            default_value='true',
+            description='Use /clock from rosbag or simulation during mapping',
+        ),
 
         # ── PointCloud2 → LaserScan ──────────────────────────────────────
         # Converts /ugv/rslidar_points (PointCloud2) to /scan (LaserScan)
@@ -35,6 +43,7 @@ def generate_launch_description():
                 'range_min':           0.1,
                 'range_max':           50.0,
                 'use_inf':             True,
+                'use_sim_time':        use_sim_time,
             }],
         ),
 
@@ -43,7 +52,7 @@ def generate_launch_description():
             package='slam_toolbox',
             executable='async_slam_toolbox_node',
             name='slam_toolbox',
-            parameters=[slam_params],
+            parameters=[slam_params, {'use_sim_time': use_sim_time}],
             output='screen',
         ),
 
@@ -53,6 +62,7 @@ def generate_launch_description():
             executable='rviz2',
             name='rviz2',
             arguments=['-d', rviz_config],
+            parameters=[{'use_sim_time': use_sim_time}],
             output='screen',
         ),
     ])
