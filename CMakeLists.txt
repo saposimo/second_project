@@ -14,6 +14,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(nav2_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(ament_index_cpp REQUIRED)
@@ -29,8 +30,15 @@ ament_target_dependencies(goal_publisher
   ament_index_cpp
 )
 
+add_executable(scan_qos_relay src/scan_qos_relay.cpp)
+ament_target_dependencies(scan_qos_relay
+  rclcpp
+  sensor_msgs
+)
+
 install(TARGETS
   goal_publisher
+  scan_qos_relay
   DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -21,7 +21,7 @@ def generate_launch_description():
         ),
 
         # ── PointCloud2 → LaserScan ──────────────────────────────────────
-        # Converts /ugv/rslidar_points (PointCloud2) to /scan (LaserScan)
+        # Converts /ugv/rslidar_points (PointCloud2) to /scan_raw (LaserScan)
         # Adjust target_frame to match the lidar TF frame in the bag
         Node(
             package='pointcloud_to_laserscan',
@@ -29,7 +29,7 @@ def generate_launch_description():
             name='pointcloud_to_laserscan',
             remappings=[
                 ('cloud_in', '/ugv/rslidar_points'),
-                ('scan',     '/scan'),
+                ('scan',     '/scan_raw'),
             ],
             parameters=[{
                 'target_frame':        'rslidar',   # adjust if needed
@@ -45,6 +45,18 @@ def generate_launch_description():
                 'use_inf':             True,
                 'use_sim_time':        use_sim_time,
             }],
+        ),
+
+        Node(
+            package='second_project',
+            executable='scan_qos_relay',
+            name='scan_qos_relay',
+            parameters=[{
+                'input_topic':   '/scan_raw',
+                'output_topic':  '/scan',
+                'use_sim_time':  use_sim_time,
+            }],
+            output='screen',
         ),
 
         # ── SLAM Toolbox (async mapping) ─────────────────────────────────
