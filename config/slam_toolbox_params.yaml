@@ -11,9 +11,9 @@ slam_toolbox:
     ceres_loss_function: None
 
     # Frames / topics
-    odom_frame:  odom
+    odom_frame:  UGV_odom
     map_frame:   map
-    base_frame:  base_link
+    base_frame:  UGV_base_link
     scan_topic:  /scan
     mode:        mapping      # use 'localization' when re-localising on saved map
 
