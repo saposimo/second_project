@@ -2,7 +2,13 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable, TimerAction
+from launch.actions import (
+    DeclareLaunchArgument,
+    IncludeLaunchDescription,
+    OpaqueFunction,
+    SetEnvironmentVariable,
+    TimerAction,
+)
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
@@ -10,28 +16,57 @@ from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
 
+def _truthy(value):
+    return value.lower() in ('1', 'true', 'yes', 'on')
+
+
+def _launch_stage_with_scan_relay(context, *args, **kwargs):
+    stage_args = []
+    if not _truthy(LaunchConfiguration('stage_gui').perform(context)):
+        stage_args.append('-g')
+    stage_args.append(LaunchConfiguration('world').perform(context))
+
+    stage = Node(
+        package='stage_ros2_stageros',
+        executable='stageros',
+        name='stageros',
+        output='screen',
+        arguments=stage_args,
+        parameters=[{
+            'base_watchdog_timeout': 0.2,
+            'is_depth_canonical': True,
+            'use_model_names': False,
+            'delay_odom_tf_by_one_update': True,
+            'use_sim_time': _truthy(LaunchConfiguration('use_sim_time').perform(context)),
+        }],
+        remappings=[
+            ('base_scan', 'base_scan_raw'),
+        ],
+    )
+
+    scan_relay = Node(
+        package='second_project',
+        executable='scan_qos_relay',
+        name='stage_scan_qos_relay',
+        output='screen',
+        parameters=[{
+            'input_topic': '/base_scan_raw',
+            'output_topic': LaunchConfiguration('scan_topic').perform(context),
+        }],
+    )
+
+    return [stage, scan_relay]
+
+
 def generate_launch_description():
     pkg_dir = get_package_share_directory('second_project')
     nav2_bringup_dir = get_package_share_directory('nav2_bringup')
-    stage_dir = get_package_share_directory('stage_ros2_stageros')
 
     map_yaml = os.path.join(pkg_dir, 'map', 'map.yaml')
     nav2_params = os.path.join(pkg_dir, 'config', 'nav2_params.yaml')
     rviz_config = os.path.join(pkg_dir, 'config', 'navigation_rviz.rviz')
     world_file = os.path.join(pkg_dir, 'worlds', 'second_project.world')
-    stage_launch = os.path.join(stage_dir, 'launch', 'stage.launch.py')
     navigation_launch = os.path.join(nav2_bringup_dir, 'launch', 'navigation_launch.py')
-
-    stage = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(stage_launch),
-        launch_arguments={
-            'world': LaunchConfiguration('world'),
-            'gui': LaunchConfiguration('stage_gui'),
-            'use_model_names': 'false',
-            'base_watchdog_timeout': '0.2',
-            'delay_odom_tf_by_one_update': 'true',
-        }.items(),
-    )
 
     nav2_navigation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(navigation_launch),
@@ -135,7 +170,7 @@ def generate_launch_description():
         DeclareLaunchArgument('stage_gui', default_value='true', description='Start the Stage GUI.'),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Use /clock from Stage.'),
         DeclareLaunchArgument('autostart', default_value='true', description='Auto-start lifecycle nodes.'),
-        DeclareLaunchArgument('rviz', default_value='true', description='Start RViz.'),
+        DeclareLaunchArgument('rviz', default_value='false', description='Start RViz.'),
         DeclareLaunchArgument('use_goal_publisher', default_value='true', description='Send CSV goals automatically.'),
         DeclareLaunchArgument('map', default_value=map_yaml, description='Occupancy map YAML file.'),
         DeclareLaunchArgument('scan_topic', default_value='/base_scan', description='Stage LaserScan topic.'),
@@ -149,7 +184,7 @@ def generate_launch_description():
         DeclareLaunchArgument('nav2_params_file', default_value=nav2_params, description='Nav2 params file.'),
         DeclareLaunchArgument('rviz_config', default_value=rviz_config, description='RViz config file.'),
         DeclareLaunchArgument('log_level', default_value='info', description='Logging level.'),
-        stage,
+        OpaqueFunction(function=_launch_stage_with_scan_relay),
         map_server,
         amcl,
         lifecycle_manager_localization,
