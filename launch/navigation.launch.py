@@ -64,6 +64,11 @@ def generate_launch_description():
     rviz_config = os.path.join(pkg_dir, 'config', 'navigation_rviz.rviz')
     world_file = os.path.join(pkg_dir, 'worlds', 'second_project.world')
     nav2_remappings = [('/tf', 'tf'), ('/tf_static', 'tf_static')]
+    controller_remappings = nav2_remappings + [('cmd_vel', 'cmd_vel_nav')]
+    velocity_smoother_remappings = nav2_remappings + [
+        ('cmd_vel', 'cmd_vel_nav'),
+        ('cmd_vel_smoothed', 'cmd_vel'),
+    ]
 
     controller_server = Node(
         package='nav2_controller',
@@ -71,7 +76,7 @@ def generate_launch_description():
         name='controller_server',
         output='screen',
         parameters=[LaunchConfiguration('nav2_params_file')],
-        remappings=nav2_remappings,
+        remappings=controller_remappings,
     )
 
     smoother_server = Node(
@@ -98,7 +103,7 @@ def generate_launch_description():
         name='behavior_server',
         output='screen',
         parameters=[LaunchConfiguration('nav2_params_file')],
-        remappings=nav2_remappings,
+        remappings=controller_remappings,
     )
 
     bt_navigator = Node(
@@ -116,7 +121,7 @@ def generate_launch_description():
         name='velocity_smoother',
         output='screen',
         parameters=[LaunchConfiguration('nav2_params_file')],
-        remappings=nav2_remappings,
+        remappings=velocity_smoother_remappings,
     )
 
     map_server = Node(
