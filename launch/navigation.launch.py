@@ -35,6 +35,8 @@ def _launch_stage_with_scan_relay(context, *args, **kwargs):
             'is_depth_canonical': True,
             'use_model_names': False,
             'delay_odom_tf_by_one_update': True,
+            # Throttle Stage to wall-clock time even when headless (no GUI to pace it).
+            'realtime_factor': 1.0,
             'use_sim_time': _truthy(LaunchConfiguration('use_sim_time').perform(context)),
         }],
         remappings=[
