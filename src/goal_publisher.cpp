@@ -24,12 +24,15 @@ public:
   GoalPublisher()
   : Node("goal_publisher"), current_goal_idx_(0)
   {
-    client_ = rclcpp_action::create_client<NavigateToPose>(this, "navigate_to_pose");
+    action_name_ = declare_parameter<std::string>("action_name", "navigate_to_pose");
+    frame_id_ = declare_parameter<std::string>("frame_id", "map");
+    const auto csv_path_override = declare_parameter<std::string>("csv_path", "");
 
-    // Build CSV path from package share directory (no absolute paths)
-    const std::string pkg_dir =
-      ament_index_cpp::get_package_share_directory("second_project");
-    const std::string csv_path = pkg_dir + "/csv/goals.csv";
+    client_ = rclcpp_action::create_client<NavigateToPose>(this, action_name_);
+
+    const std::string csv_path = csv_path_override.empty() ?
+      ament_index_cpp::get_package_share_directory("second_project") + "/csv/goals.csv" :
+      csv_path_override;
 
     load_goals(csv_path);
 
@@ -39,6 +42,8 @@ public:
     }
 
     RCLCPP_INFO(get_logger(), "Loaded %zu goals from %s", goals_.size(), csv_path.c_str());
+    RCLCPP_INFO(get_logger(), "Using action '%s' in frame '%s'",
+      action_name_.c_str(), frame_id_.c_str());
 
     // Poll until the action server is available, then start sending goals
     timer_ = create_wall_timer(
@@ -100,7 +105,7 @@ private:
       idx + 1, goals_.size(), g.x, g.y, g.theta);
 
     auto goal_msg = NavigateToPose::Goal();
-    goal_msg.pose.header.frame_id = "map";
+    goal_msg.pose.header.frame_id = frame_id_;
     goal_msg.pose.header.stamp    = now();
     goal_msg.pose.pose.position.x = g.x;
     goal_msg.pose.pose.position.y = g.y;
@@ -159,6 +164,8 @@ private:
   rclcpp_action::Client<NavigateToPose>::SharedPtr client_;
   rclcpp::TimerBase::SharedPtr timer_;
   std::vector<Goal> goals_;
+  std::string action_name_;
+  std::string frame_id_;
   size_t current_goal_idx_;
 };
 

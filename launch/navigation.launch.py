@@ -1,8 +1,10 @@
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
@@ -14,8 +16,20 @@ def generate_launch_description():
     nav2_params = os.path.join(pkg_dir, 'config', 'nav2_params.yaml')
     rviz_config = os.path.join(pkg_dir, 'config', 'navigation_rviz.rviz')
     world_file  = os.path.join(pkg_dir, 'worlds', 'second_project.world')
+    use_rviz = LaunchConfiguration('use_rviz')
+    use_goal_publisher = LaunchConfiguration('use_goal_publisher')
 
     return LaunchDescription([
+        DeclareLaunchArgument(
+            'use_rviz',
+            default_value='true',
+            description='Launch RViz with the navigation stack.',
+        ),
+        DeclareLaunchArgument(
+            'use_goal_publisher',
+            default_value='true',
+            description='Automatically send CSV goals after Nav2 starts.',
+        ),
 
         # ── Stage simulation ─────────────────────────────────────────────
         Node(
@@ -29,6 +43,10 @@ def generate_launch_description():
                 'use_static_transformations': True,
                 'use_sim_time': True,
             }],
+            remappings=[
+                ('base_scan', 'scan'),
+                ('/base_scan', '/scan'),
+            ],
             output='screen',
         ),
 
@@ -41,6 +59,7 @@ def generate_launch_description():
                 'map':         map_yaml,
                 'params_file': nav2_params,
                 'use_sim_time': 'true',
+                'autostart':    'true',
             }.items(),
         ),
 
@@ -49,7 +68,12 @@ def generate_launch_description():
             package='second_project',
             executable='goal_publisher',
             name='goal_publisher',
-            parameters=[{'use_sim_time': True}],
+            parameters=[{
+                'use_sim_time': True,
+                'frame_id': 'map',
+                'action_name': 'navigate_to_pose',
+            }],
+            condition=IfCondition(use_goal_publisher),
             output='screen',
         ),
 
@@ -60,6 +84,7 @@ def generate_launch_description():
             name='rviz2',
             arguments=['-d', rviz_config],
             parameters=[{'use_sim_time': True}],
+            condition=IfCondition(use_rviz),
             output='screen',
         ),
     ])
