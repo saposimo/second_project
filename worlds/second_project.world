@@ -56,15 +56,15 @@ floorplan
 (
   name "map"
   bitmap "../map/map.png"
-  size [ 30.6 17.5 0.5 ]
-  pose [ 8.52 -3.95 0.0 0.0 ]
+  size [ 30.7 17.5 0.5 ]
+  pose [ 8.54 -3.65 0.0 0.0 ]
 )
 
 # ── Simulation window ────────────────────────────────────────────────
 window
 (
   size [ 1024 768 ]
-  center [ 8.52 -3.95 ]
+  center [ 8.54 -3.65 ]
   rotate [ 0.0 0.0 ]
   scale 20.0
 )
