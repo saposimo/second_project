@@ -15,16 +15,6 @@ Visualization Manager:
         Reliability Policy: Reliable
         Durability Policy: Transient Local
       Value: true
-    - Alpha: 0.3
-      Class: rviz_default_plugins/Map
-      Color Scheme: costmap
-      Enabled: false
-      Name: Local Costmap
-      Topic:
-        Value: /local_costmap/costmap
-        Reliability Policy: Reliable
-        Durability Policy: Volatile
-      Value: true
     - Class: rviz_default_plugins/LaserScan
       Enabled: true
       Name: Stage LaserScan

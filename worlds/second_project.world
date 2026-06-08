@@ -40,7 +40,7 @@ define omni_laser ranger
 
 define omni_robot position
 (
-  size [ 0.6 0.5 0.35 ]       # AgileX Scout Mini footprint
+  size [ 0.612 0.580 0.245 ]  # AgileX Scout Mini Omni footprint (datasheet L×W×H)
   origin [ 0.0 0.0 0.0 0.0 ]
   drive "omni"                 # omnidirectional kinematics
 
