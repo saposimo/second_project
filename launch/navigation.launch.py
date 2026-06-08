@@ -4,13 +4,11 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
-    IncludeLaunchDescription,
     OpaqueFunction,
     SetEnvironmentVariable,
     TimerAction,
 )
 from launch.conditions import IfCondition
-from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -60,25 +58,65 @@ def _launch_stage_with_scan_relay(context, *args, **kwargs):
 
 def generate_launch_description():
     pkg_dir = get_package_share_directory('second_project')
-    nav2_bringup_dir = get_package_share_directory('nav2_bringup')
 
     map_yaml = os.path.join(pkg_dir, 'map', 'map.yaml')
     nav2_params = os.path.join(pkg_dir, 'config', 'nav2_params.yaml')
     rviz_config = os.path.join(pkg_dir, 'config', 'navigation_rviz.rviz')
     world_file = os.path.join(pkg_dir, 'worlds', 'second_project.world')
-    navigation_launch = os.path.join(nav2_bringup_dir, 'launch', 'navigation_launch.py')
+    nav2_remappings = [('/tf', 'tf'), ('/tf_static', 'tf_static')]
 
-    nav2_navigation = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(navigation_launch),
-        launch_arguments={
-            'namespace': '',
-            'use_sim_time': LaunchConfiguration('use_sim_time'),
-            'autostart': LaunchConfiguration('autostart'),
-            'params_file': LaunchConfiguration('nav2_params_file'),
-            'use_composition': 'False',
-            'use_respawn': 'False',
-            'log_level': LaunchConfiguration('log_level'),
-        }.items(),
+    controller_server = Node(
+        package='nav2_controller',
+        executable='controller_server',
+        name='controller_server',
+        output='screen',
+        parameters=[LaunchConfiguration('nav2_params_file')],
+        remappings=nav2_remappings,
+    )
+
+    smoother_server = Node(
+        package='nav2_smoother',
+        executable='smoother_server',
+        name='smoother_server',
+        output='screen',
+        parameters=[LaunchConfiguration('nav2_params_file')],
+        remappings=nav2_remappings,
+    )
+
+    planner_server = Node(
+        package='nav2_planner',
+        executable='planner_server',
+        name='planner_server',
+        output='screen',
+        parameters=[LaunchConfiguration('nav2_params_file')],
+        remappings=nav2_remappings,
+    )
+
+    behavior_server = Node(
+        package='nav2_behaviors',
+        executable='behavior_server',
+        name='behavior_server',
+        output='screen',
+        parameters=[LaunchConfiguration('nav2_params_file')],
+        remappings=nav2_remappings,
+    )
+
+    bt_navigator = Node(
+        package='nav2_bt_navigator',
+        executable='bt_navigator',
+        name='bt_navigator',
+        output='screen',
+        parameters=[LaunchConfiguration('nav2_params_file')],
+        remappings=nav2_remappings,
+    )
+
+    velocity_smoother = Node(
+        package='nav2_velocity_smoother',
+        executable='velocity_smoother',
+        name='velocity_smoother',
+        output='screen',
+        parameters=[LaunchConfiguration('nav2_params_file')],
+        remappings=nav2_remappings,
     )
 
     map_server = Node(
@@ -136,6 +174,25 @@ def generate_launch_description():
         }],
     )
 
+    lifecycle_manager_navigation = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager_navigation',
+        output='screen',
+        parameters=[{
+            'use_sim_time': LaunchConfiguration('use_sim_time'),
+            'autostart': LaunchConfiguration('autostart'),
+            'node_names': [
+                'controller_server',
+                'smoother_server',
+                'planner_server',
+                'behavior_server',
+                'bt_navigator',
+                'velocity_smoother',
+            ],
+        }],
+    )
+
     goal_publisher = TimerAction(
         period=8.0,
         actions=[
@@ -167,7 +224,7 @@ def generate_launch_description():
     return LaunchDescription([
         SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1'),
         DeclareLaunchArgument('world', default_value=world_file, description='Stage world file.'),
-        DeclareLaunchArgument('stage_gui', default_value='true', description='Start the Stage GUI.'),
+        DeclareLaunchArgument('stage_gui', default_value='false', description='Start the Stage GUI.'),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Use /clock from Stage.'),
         DeclareLaunchArgument('autostart', default_value='true', description='Auto-start lifecycle nodes.'),
         DeclareLaunchArgument('rviz', default_value='false', description='Start RViz.'),
@@ -188,7 +245,13 @@ def generate_launch_description():
         map_server,
         amcl,
         lifecycle_manager_localization,
-        nav2_navigation,
+        controller_server,
+        smoother_server,
+        planner_server,
+        behavior_server,
+        bt_navigator,
+        velocity_smoother,
+        lifecycle_manager_navigation,
         goal_publisher,
         rviz,
     ])
