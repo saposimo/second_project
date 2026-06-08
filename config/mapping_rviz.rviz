@@ -33,13 +33,6 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Value: true
-    - Class: rviz_default_plugins/RobotModel
-      Description Source: Topic
-      Description Topic:
-        Value: /robot_description
-      Enabled: true
-      Name: RobotModel
-      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48

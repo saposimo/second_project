@@ -15,11 +15,8 @@ find_package(rclcpp_action REQUIRED)
 find_package(nav2_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(nav_msgs REQUIRED)
-find_package(rosgraph_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
-find_package(tf2_ros REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 
 add_executable(goal_publisher src/goal_publisher.cpp)
@@ -39,21 +36,9 @@ ament_target_dependencies(scan_qos_relay
   sensor_msgs
 )
 
-add_executable(simple_robot_simulator src/simple_robot_simulator.cpp)
-ament_target_dependencies(simple_robot_simulator
-  rclcpp
-  geometry_msgs
-  nav_msgs
-  rosgraph_msgs
-  sensor_msgs
-  tf2
-  tf2_ros
-)
-
 install(TARGETS
   goal_publisher
   scan_qos_relay
-  simple_robot_simulator
   DESTINATION lib/${PROJECT_NAME}
 )
 

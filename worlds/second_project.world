@@ -28,7 +28,9 @@ define omni_laser ranger
 (
   sensor
   (
-    range [ 0.0 20.0 ]
+    pose [ 0.0 0.0 0.0 0.0 ]
+    size [ 0.1 0.1 0.1 ]
+    range [ 0.05 20.0 ]
     fov 360.0
     samples 720
   )
@@ -46,7 +48,7 @@ define omni_robot position
 
   color "red"
   localization "odom"
-  odom_error [ 0.05 0.05 0.0 0.0 0.0 0.02 ]
+  odom_error [ 0.0 0.0 0.0 0.0 ]
 )
 
 # ── Environment (map) ────────────────────────────────────────────────
