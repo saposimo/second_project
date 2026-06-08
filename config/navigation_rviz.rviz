@@ -18,7 +18,7 @@ Visualization Manager:
     - Alpha: 0.3
       Class: rviz_default_plugins/Map
       Color Scheme: costmap
-      Enabled: true
+      Enabled: false
       Name: Local Costmap
       Topic:
         Value: /local_costmap/costmap
@@ -52,6 +52,10 @@ Visualization Manager:
       Name: Particle Cloud (AMCL)
       Shape: Arrow (Flat)
       Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
         Reliability Policy: Best Effort
         Value: /particle_cloud
       Value: true
