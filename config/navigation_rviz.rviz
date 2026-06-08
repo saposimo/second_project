@@ -67,14 +67,14 @@ Visualization Manager:
         Reliability Policy: Reliable
       Color: 0; 255; 128
       Value: true
-    - Class: rviz_default_plugins/PoseStamped
+    - Class: rviz_default_plugins/Pose
       Enabled: true
       Name: Current Goal
       Topic:
         Value: /goal_pose
         Reliability Policy: Reliable
       Value: true
-    - Class: rviz_default_plugins/Pose
+    - Class: rviz_default_plugins/PoseWithCovariance
       Enabled: true
       Name: Robot Pose
       Topic:
