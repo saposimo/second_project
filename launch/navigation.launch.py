@@ -19,11 +19,16 @@ def generate_launch_description():
 
         # ── Stage simulation ─────────────────────────────────────────────
         Node(
-            package='stage_ros',
-            executable='stageros',
+            package='stage_ros2',
+            executable='stage_ros2',
             name='stage',
-            arguments=[world_file],
-            parameters=[{'use_sim_time': True}],
+            parameters=[{
+                'world_file': world_file,
+                'one_tf_tree': True,
+                'enforce_prefixes': False,
+                'use_static_transformations': True,
+                'use_sim_time': True,
+            }],
             output='screen',
         ),
 
