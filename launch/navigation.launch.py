@@ -15,7 +15,6 @@ def generate_launch_description():
     map_yaml    = os.path.join(pkg_dir, 'map',    'map.yaml')
     nav2_params = os.path.join(pkg_dir, 'config', 'nav2_params.yaml')
     rviz_config = os.path.join(pkg_dir, 'config', 'navigation_rviz.rviz')
-    world_file  = os.path.join(pkg_dir, 'worlds', 'second_project.world')
     use_rviz = LaunchConfiguration('use_rviz')
     use_goal_publisher = LaunchConfiguration('use_goal_publisher')
 
@@ -31,22 +30,22 @@ def generate_launch_description():
             description='Automatically send CSV goals after Nav2 starts.',
         ),
 
-        # ── Stage simulation ─────────────────────────────────────────────
+        # ── Internal 2D simulation ───────────────────────────────────────
         Node(
-            package='stage_ros2',
-            executable='stage_ros2',
-            name='stage',
+            package='second_project',
+            executable='simple_robot_simulator',
+            name='simple_robot_simulator',
             parameters=[{
-                'world_file': world_file,
-                'one_tf_tree': True,
-                'enforce_prefixes': False,
-                'use_static_transformations': True,
-                'use_sim_time': True,
+                'use_sim_time': False,
+                'map_topic': '/map',
+                'scan_topic': '/scan',
+                'odom_topic': '/odom',
+                'cmd_vel_topic': '/cmd_vel',
+                'initial_x': 1.6,
+                'initial_y': -4.4,
+                'initial_yaw': -0.013,
+                'robot_radius': 0.35,
             }],
-            remappings=[
-                ('base_scan', 'scan'),
-                ('/base_scan', '/scan'),
-            ],
             output='screen',
         ),
 
