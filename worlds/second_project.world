@@ -38,7 +38,7 @@ floorplan
   name "map"
   bitmap "../map/map.png"
   # ↓ Update these dimensions after Task 1!
-  size [ 50.0 50.0 0.5 ]
+  size [ 30.6 17.5 0.5 ]
   pose [ 0.0 0.0 0.0 0.0 ]
 )
 
