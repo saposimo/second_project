@@ -51,9 +51,9 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/TopDownOrtho
-      Scale: 10
-      X: 0
-      Y: 0
+      Scale: 22
+      X: 5.0
+      Y: -4.0
 Window Geometry:
   Height: 900
   Width: 1200

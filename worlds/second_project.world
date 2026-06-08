@@ -57,14 +57,16 @@ floorplan
   name "map"
   bitmap "../map/map.png"
   size [ 30.7 17.5 0.5 ]
-  pose [ 8.54 -3.65 0.0 0.0 ]
+  # Centre = map.yaml origin + half-size:  (-6.84 + 15.35, -12.8 + 8.75) = (8.51, -4.05)
+  # This makes the Stage world frame coincide with the nav2 'map' frame.
+  pose [ 8.51 -4.05 0.0 0.0 ]
 )
 
 # ── Simulation window ────────────────────────────────────────────────
 window
 (
   size [ 1024 768 ]
-  center [ 8.54 -3.65 ]
+  center [ 8.51 -4.05 ]
   rotate [ 0.0 0.0 ]
   scale 20.0
 )

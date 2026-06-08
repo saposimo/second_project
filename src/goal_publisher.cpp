@@ -2,6 +2,7 @@
 #include <rclcpp_action/rclcpp_action.hpp>
 #include <nav2_msgs/action/navigate_to_pose.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/pose_array.hpp>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>
@@ -45,6 +46,13 @@ public:
     RCLCPP_INFO(get_logger(), "Using action '%s' in frame '%s'",
       action_name_.c_str(), frame_id_.c_str());
 
+    // Visualization: publish all goals once (latched) and the current goal as we go.
+    goals_viz_pub_ = create_publisher<geometry_msgs::msg::PoseArray>(
+      "goals", rclcpp::QoS(1).transient_local());
+    current_goal_pub_ = create_publisher<geometry_msgs::msg::PoseStamped>(
+      "current_goal", rclcpp::QoS(1).transient_local());
+    publish_all_goals();
+
     // Poll until the action server is available, then start sending goals
     timer_ = create_wall_timer(
       std::chrono::seconds(1),
@@ -81,6 +89,29 @@ private:
     }
   }
 
+  // ---------- Visualization helpers ----------
+  geometry_msgs::msg::Pose make_pose(const Goal & g) const
+  {
+    geometry_msgs::msg::Pose p;
+    p.position.x = g.x;
+    p.position.y = g.y;
+    tf2::Quaternion q;
+    q.setRPY(0.0, 0.0, g.theta);
+    p.orientation = tf2::toMsg(q);
+    return p;
+  }
+
+  void publish_all_goals()
+  {
+    geometry_msgs::msg::PoseArray arr;
+    arr.header.frame_id = frame_id_;
+    arr.header.stamp = now();
+    for (const auto & g : goals_) {
+      arr.poses.push_back(make_pose(g));
+    }
+    goals_viz_pub_->publish(arr);
+  }
+
   // ---------- Action server connection ----------
   void try_connect()
   {
@@ -113,6 +144,9 @@ private:
     tf2::Quaternion q;
     q.setRPY(0.0, 0.0, g.theta);
     goal_msg.pose.pose.orientation = tf2::toMsg(q);
+
+    // Publish the active goal so RViz can show it.
+    current_goal_pub_->publish(goal_msg.pose);
 
     auto opts = rclcpp_action::Client<NavigateToPose>::SendGoalOptions();
 
@@ -162,6 +196,8 @@ private:
 
   // ---------- Members ----------
   rclcpp_action::Client<NavigateToPose>::SharedPtr client_;
+  rclcpp::Publisher<geometry_msgs::msg::PoseArray>::SharedPtr goals_viz_pub_;
+  rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr current_goal_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
   std::vector<Goal> goals_;
   std::string action_name_;

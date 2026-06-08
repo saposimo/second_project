@@ -43,13 +43,17 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Value: true
-    - Class: rviz_default_plugins/PoseArray
+    - Alpha: 1
+      Class: nav2_rviz_plugins/ParticleCloud
+      Color: 0; 180; 0
       Enabled: true
+      Max Arrow Length: 0.3
+      Min Arrow Length: 0.02
       Name: Particle Cloud (AMCL)
+      Shape: Arrow (Flat)
       Topic:
-        Value: /particle_cloud
         Reliability Policy: Best Effort
-      Color: 0; 255; 0
+        Value: /particle_cloud
       Value: true
     - Class: rviz_default_plugins/Path
       Enabled: true
@@ -67,12 +71,24 @@ Visualization Manager:
         Reliability Policy: Reliable
       Color: 0; 255; 128
       Value: true
+    - Class: rviz_default_plugins/PoseArray
+      Enabled: true
+      Name: All Goals (CSV)
+      Shape: Arrow (Flat)
+      Color: 255; 170; 0
+      Topic:
+        Value: /goals
+        Reliability Policy: Reliable
+        Durability Policy: Transient Local
+      Value: true
     - Class: rviz_default_plugins/Pose
       Enabled: true
       Name: Current Goal
+      Color: 255; 25; 0
       Topic:
-        Value: /goal_pose
+        Value: /current_goal
         Reliability Policy: Reliable
+        Durability Policy: Transient Local
       Value: true
     - Class: rviz_default_plugins/PoseWithCovariance
       Enabled: true
@@ -99,9 +115,9 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/TopDownOrtho
-      Scale: 10
-      X: 0
-      Y: 0
+      Scale: 22
+      X: 8.5
+      Y: -4.0
 Window Geometry:
   Height: 900
   Width: 1200
