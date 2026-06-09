@@ -40,9 +40,9 @@ define omni_laser ranger
 
 define omni_robot position
 (
-  # Collision footprint tuned for this noisy generated map. The real Scout Mini
-  # Omni footprint is larger, but the mapped corridors are too narrow for it.
-  size [ 0.2552 0.2552 0.245 ]
+  # AgileX Scout Mini Omnidirectional real footprint (AgileX datasheet):
+  #   length 612 mm x width 580 mm x height 245 mm
+  size [ 0.612 0.580 0.245 ]
   origin [ 0.0 0.0 0.0 0.0 ]
   drive "omni"                 # omnidirectional kinematics
 
