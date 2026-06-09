@@ -233,7 +233,7 @@ controller_server:
         enabled: true
         cost_power: 1
         # Kept moderate so the robot still strafes to escape tight spots.
-        cost_weight: 3.0
+        cost_weight: 5.0
         threshold_to_consider: 0.5
 
 local_costmap:
