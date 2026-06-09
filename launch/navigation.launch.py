@@ -230,8 +230,13 @@ def generate_launch_description():
 
     return LaunchDescription([
         SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1'),
+        SetEnvironmentVariable('QT_QPA_PLATFORM', 'xcb'),
+        SetEnvironmentVariable('LIBGL_ALWAYS_SOFTWARE', '1'),
         DeclareLaunchArgument('world', default_value=world_file, description='Stage world file.'),
-        DeclareLaunchArgument('stage_gui', default_value='false', description='Start the Stage GUI.'),
+        DeclareLaunchArgument(
+            'stage_gui',
+            default_value='false',
+            description='Start the optional Stage GUI; keep false in Docker/VM unless debugging Stage.'),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Use /clock from Stage.'),
         DeclareLaunchArgument('autostart', default_value='true', description='Auto-start lifecycle nodes.'),
         DeclareLaunchArgument('rviz', default_value='true', description='Start RViz.'),
