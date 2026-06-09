@@ -203,7 +203,8 @@ controller_server:
         enabled: true
         cost_power: 1
         cost_weight: 2.0
-        threshold_to_consider: 0.5
+        # Start aligning the nose to the goal heading earlier during the approach.
+        threshold_to_consider: 1.2
       PathAlignCritic:
         enabled: true
         cost_power: 1
@@ -232,8 +233,9 @@ controller_server:
       PreferForwardCritic:
         enabled: true
         cost_power: 1
-        # Kept moderate so the robot still strafes to escape tight spots.
-        cost_weight: 5.0
+        # Strong forward bias: nose firmly along travel. If it starts getting stuck
+        # in tight spots again (can't strafe out), lower this back toward 5.0.
+        cost_weight: 8.0
         threshold_to_consider: 0.5
 
 local_costmap:
