@@ -91,6 +91,22 @@ Visualization Manager:
         Value: /amcl_pose
         Reliability Policy: Reliable
       Value: true
+    - Class: rviz_default_plugins/Polygon
+      Enabled: true
+      Name: Robot Footprint (local)
+      Color: 25; 255; 0
+      Topic:
+        Value: /local_costmap/published_footprint
+        Reliability Policy: Reliable
+      Value: true
+    - Class: rviz_default_plugins/Polygon
+      Enabled: true
+      Name: Robot Footprint (global)
+      Color: 0; 170; 255
+      Topic:
+        Value: /global_costmap/published_footprint
+        Reliability Policy: Reliable
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
