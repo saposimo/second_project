@@ -201,7 +201,7 @@ def generate_launch_description():
     )
 
     goal_publisher = TimerAction(
-        period=8.0,
+        period=12.0,
         actions=[
             Node(
                 package='second_project',
@@ -234,7 +234,7 @@ def generate_launch_description():
         DeclareLaunchArgument('stage_gui', default_value='false', description='Start the Stage GUI.'),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Use /clock from Stage.'),
         DeclareLaunchArgument('autostart', default_value='true', description='Auto-start lifecycle nodes.'),
-        DeclareLaunchArgument('rviz', default_value='false', description='Start RViz.'),
+        DeclareLaunchArgument('rviz', default_value='true', description='Start RViz.'),
         DeclareLaunchArgument('use_goal_publisher', default_value='true', description='Send CSV goals automatically.'),
         DeclareLaunchArgument('map', default_value=map_yaml, description='Occupancy map YAML file.'),
         DeclareLaunchArgument('scan_topic', default_value='/base_scan', description='Stage LaserScan topic.'),
