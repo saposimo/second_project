@@ -14,7 +14,7 @@ public:
     output_topic_ = declare_parameter<std::string>("output_topic", "/scan");
 
     const auto input_qos = rclcpp::SensorDataQoS();
-    auto output_qos = rclcpp::QoS(rclcpp::KeepLast(10));
+    auto output_qos = rclcpp::QoS(rclcpp::KeepLast(1));
     output_qos.reliable();
     output_qos.durability_volatile();
 
