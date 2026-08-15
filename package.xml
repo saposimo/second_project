@@ -4,7 +4,7 @@
   <name>second_project</name>
   <version>0.0.1</version>
   <description>Second Robotics Project - Mapping and Navigation</description>
-  <maintainer email="student@polimi.it">student</maintainer>
+  <maintainer email="simone81tumminello@gmail.com">Simone Tumminello</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
